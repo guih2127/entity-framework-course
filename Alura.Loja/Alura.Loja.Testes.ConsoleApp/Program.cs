@@ -11,30 +11,64 @@ namespace Alura.Loja.Testes.ConsoleApp
         static void Main(string[] args)
         {
             //GravarUsandoAdoNet();
+            //GravarUsandoEntity();
+            RecuperarProdutos();
+            ExcluirProdutos();
+            RecuperarProdutos();
+            AtualizarProduto();
+        }
+
+        private static void AtualizarProduto()
+        {
+            // Incluir um produto.
             GravarUsandoEntity();
+
+            // Obter o produto e atualiza-lo.
+            using (var repo = new ProdutoDAOEntity())
+            {
+                Produto primeiro = repo.Produtos().First();
+                primeiro.Nome = "Cassino Royale - Editado";
+                repo.Atualizar(primeiro);
+            }
+
+            RecuperarProdutos();
+        }
+
+        private static void ExcluirProdutos()
+        {
+            using (var repo = new ProdutoDAOEntity())
+            {
+                IList<Produto> produtos = repo.Produtos();
+                foreach(var item in produtos)
+                {
+                    repo.Remover(item);
+                }
+            }
+        }
+
+        private static void RecuperarProdutos()
+        {
+            using (var repo = new ProdutoDAOEntity())
+            {
+                IList<Produto> produtos = repo.Produtos();
+                Console.WriteLine("Foram encontrados {0} produtos.", produtos.Count);
+                foreach(var item in produtos)
+                {
+                    Console.WriteLine(item.Nome);
+                }
+            }
         }
 
         private static void GravarUsandoEntity()
         {
-            Produto p1 = new Produto();
-            p1.Nome = "Harry Potter e a Ordem da Fênix";
-            p1.Categoria = "Livros";
-            p1.Preco = 19.89;
+            Produto p = new Produto();
+            p.Nome = "Harry Potter e a Ordem da Fênix";
+            p.Categoria = "Livros";
+            p.Preco = 19.89;
 
-            Produto p2 = new Produto();
-            p2.Nome = "Senhor dos Anéis 1";
-            p2.Categoria = "Livros";
-            p2.Preco = 19.89;
-
-            Produto p3 = new Produto();
-            p3.Nome = "O Monge e o Executivo";
-            p3.Categoria = "Livros";
-            p3.Preco = 19.89;
-
-            using (var contexto = new LojaContext())
+            using (var contexto = new ProdutoDAOEntity())
             {
-                contexto.Produtos.AddRange(p1, p2, p3);
-                contexto.SaveChanges();
+                contexto.Adicionar(p);
             }
             // Com o metódo AddRange(), podemos adicionar vários objetos de uma vez no metódo. Além disso,
             // ganhamos uma melhora de performance para a inclusão de vários objetos.
