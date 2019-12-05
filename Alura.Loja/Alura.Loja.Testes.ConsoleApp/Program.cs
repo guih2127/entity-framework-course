@@ -14,42 +14,34 @@ namespace Alura.Loja.Testes.ConsoleApp
     {
         static void Main(string[] args)
         {
+            // compra de 6 pães franceses.
+            var paoFrances = new Produto();
+            paoFrances.Nome = "Pão Frances";
+            paoFrances.PrecoUnitario = 0.40;
+            paoFrances.Unidade = "Unidade";
+            paoFrances.Categoria = "Padaria";
+
+            var compra = new Compra();
+            compra.Quantidade = 6;
+            compra.Produto = paoFrances;
+            compra.Preco = paoFrances.PrecoUnitario * compra.Quantidade;
+
             using (var contexto = new LojaContext())
             {
                 var serviceProvider = contexto.GetInfrastructure<IServiceProvider>();
                 var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
                 loggerFactory.AddProvider(SqlLoggerProvider.Create());
 
-                var produtos = contexto.Produtos.ToList();
+                contexto.Compra.Add(compra);
 
                 ExibeEntries(contexto.ChangeTracker.Entries());
 
-                var novoProduto = new Produto()
-                {
-                    Nome = "Desinfetante",
-                    Categoria = "Limpeza",
-                    Preco = 2.99
-                };
-
-                contexto.Produtos.Add(novoProduto);
-
-                ExibeEntries(contexto.ChangeTracker.Entries());
-
-                contexto.Produtos.Remove(novoProduto);
-
-                ExibeEntries(contexto.ChangeTracker.Entries());
-
-                Console.WriteLine(" ---- ");
-
-                var entry = contexto.Entry(novoProduto);
-                Console.WriteLine(entry.Entity.ToString() + " - " + entry.State);
+                contexto.SaveChanges();
             }
         }
 
         private static void ExibeEntries(IEnumerable<EntityEntry> entries)
         {
-            Console.WriteLine(" ---------- ");
-
             foreach (var e in entries)
             {
                 Console.WriteLine(e.Entity.ToString() + " - " + e.State);

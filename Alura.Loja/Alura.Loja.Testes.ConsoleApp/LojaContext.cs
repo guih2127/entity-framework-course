@@ -13,6 +13,7 @@ namespace Alura.Loja.Testes.ConsoleApp
     public class LojaContext : DbContext
     {
         public DbSet<Produto> Produtos { get; set; }
+        public DbSet<Compra> Compra { get; set; }
 
         public LojaContext()
         { }
